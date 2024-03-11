@@ -45,7 +45,7 @@ class Projcetile {
     if (this.isAlive) {
       if (abs(this.pos.x - character.pos.x) < this.bulletW / 2 + character.charW / 2 && 
           abs(this.pos.y - character.pos.y) < this.bulletH / 2 + character.charH / 2) {
-        if (character instanceof BossEnemy) { // Compare with an instance of the BossEnemy class
+        if (character instanceof BossEnemy) {
           character.hitCharacter(i, true); 
         } else {
           character.hitCharacter(i, false); 

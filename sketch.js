@@ -3,6 +3,8 @@ let playerImg;
 let basicEnemyImg;
 let bossEnemyImg;
 let backgroundImg;
+let trophyIcon2;
+let clockIconImg;
 let customFont;
 let customFont2;
 let bossShootSpeed;
@@ -13,13 +15,30 @@ let score = 0;
 let enemiesSpawned = false;
 let prevGameState;
 let healthPacketInterval = 600;
+let timeAchievement1;
+let scoreAchievement1;
+let timeIcon;
+let scoreIcon;
+let waveTransitionDelay = 180; // Adjust this value as needed
+let waveTransitionTimer = 0;
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   
-  player = new Player(createVector(width/2, height/2), createVector(3,3), 100, 100,100)
+  player = new Player(createVector(width/2, height/2), createVector(2,2), 100, 100,100)
   
   backgroundImg.resize(width, height); 
+  
+  timeAchievement1 = new TimeAchievement(
+  createVector(width / 2, 100), // Example position
+  createVector(30, height - 30) // Example move position
+);
+  scoreAchievement1 = new ScoreAchievement(
+  createVector(width / 2, 100), // Example position
+  createVector(30, height - 30) // Example move position
+);
+
   
   spawnEnemies(5);
 }
@@ -27,38 +46,69 @@ function setup() {
 function draw() {
   background(backgroundImg);
   switch (gameState) {
-      case 0: gamePlay(60);
-      break;
-      case 1: gamePlay(30);
-      break;
-      case 2: gameOver(false);
-      break;
-      case 3: gameOver(true);
-      break;
-      case 4: startingScreen();
-      break;
-      case 5: pauseScreen();
-      break;
+      case 0: 
+        gamePlay(60);
+        break;
+      case 1: 
+        gamePlay(30);
+        break;
+      case 2: 
+        gameOver(false);
+        break;
+      case 3: 
+        gameOver(true);
+        break;
+      case 4: 
+        startingScreen();
+        frameRate(0);
+        break;
+      case 5: 
+        pauseScreen();
+        break;
+      case 6: 
+        gamePlay(30);
+        break;
   }
   
-  if(enemies.length <= 0 && gameState === 0){
-    gameState = 1;
-    enemiesSpawned = false;
+  console.log(gameState);
+
+  if (enemies.length <= 0 && gameState === 0 && !enemiesSpawned) {
+    gameState = 1; // Transition to game state 1 after first wave is cleared
+    waveTransitionTimer = frameCount + waveTransitionDelay;
   }
   
-  if (enemies.length <= 0 && gameState === 1 && enemiesSpawned) {
-    gameState = 3;
+  if (enemies.length <= 0 && gameState === 1 && frameCount >= waveTransitionTimer) {
+    gameState = 6; // Transition to game state 6 after first wave is cleared and transition timer elapsed
+    waveTransitionTimer = frameCount + waveTransitionDelay;
+    spawnEnemies(10); // Spawn second wave of enemies
+}
+
+
+  if (enemies.length <= 0 && gameState === 6 && enemiesSpawned && frameCount >= waveTransitionTimer) {
+    gameState = 3; // Transition to game over state if all waves are cleared
   }
-  
-  if(player.health <= 0){
-    gameState = 2;
+
+  if (player.health <= 0) {
+    gameState = 2; // Transition to game over state if player health reaches 0
   }
-  
+
   if (frameCount % healthPacketInterval === 0) {
     spawnHealthPacket();
   }
-  
+
+  if (gameState === 0 || gameState === 1 || gameState === 6) {
+    if (frameCount >= 600) {
+      timeAchievement1.update();
+    } 
+  }
+
+  if (gameState === 0 || gameState === 1 || gameState === 6) {
+    if (score >= 12) {
+      scoreAchievement1.update();
+    } 
+  }
 }
+
 
 function gamePlay(bossShootTimer){
   bossShootSpeed = bossShootTimer;
@@ -66,6 +116,13 @@ function gamePlay(bossShootTimer){
     spawnEnemies(7);
     enemiesSpawned = true;
   }
+  
+  if(gameState === 6 && !enemiesSpawned){
+    spawnEnemies(10);
+    enemiesSpawned = true;
+  }
+  
+  
   
   if(up){
     upAcc = createVector(0, -0.5);
@@ -186,13 +243,14 @@ function startingScreen(){
     textSize(25)
     text('CONTROLS', width/2, 120);
     textSize(15);
-    text('Use the arrow keys to move your\n character (MARIO) around the screen', width/2, 150);
+    text('Use WASD keys to move your\n character (MARIO) around the screen', width/2, 150);
     text('Use the space bar to shoot', width/2, 200)
     
     textSize(25)
     text('OBJECTIVE', width/2, 250);
     textSize(15);
-    text('Kill spike enemies and ghost enemy \n before the time runs out and before you die', width/2, 280);
+    text('Kill spike enemies and ghost enemy before you die', width/2, 280);
+  text('Gain 5hp from med packs (white circles with green cross)', width/2, 305);
     
     textSize(25)
     text('RULES', width/2, 350);
@@ -212,16 +270,24 @@ function startingScreen(){
 }
 
 function spawnEnemies(numOfEnemies){
+  let enemySpeed = 3;
+  if(gameState === 1){
+    enemySpeed = 5
+  }else if (gameState === 6){
+    enemySpeed = 8
+  }
+  
   for (let i = 0; i < numOfEnemies; i++){
     if(i === 0){
       let newEnemy = new BossEnemy(createVector((random(50, width-50)), random(50,height-50)), createVector(random(-3,3),random(-3,3)), 8, 80, 80)
       enemies.push(newEnemy);
-      } else{
-      let newEnemy = new BasicEnemy(createVector((random(30, width-30)), random(30,height-30)), createVector(3,3), 3, 30, 30);
+    } else{
+      let newEnemy = new BasicEnemy(createVector((random(30, width-30)), random(30,height-30)), createVector(enemySpeed,enemySpeed), 3, 30, 30);
       enemies.push(newEnemy);
     }
   }
 }
+
 
 function spawnHealthPacket() {
   let newHealthPacket = new HealthPacket(
@@ -240,7 +306,14 @@ function preload(){
   playerImg = loadImage('marioFace2.webp')
   basicEnemyImg = loadImage('basicEnemy.webp')
   bossEnemyImg = loadImage('bossEnemy.webp')
+  trophyIcon2 = loadImage('trophyIcon3.webp');
+  clockIconImg = loadImage('clockIcon2.webp');
+  timeIcon = loadImage('timeIcon.webp')
+    scoreIcon = loadImage('scoreIcon.webp')
+
 }
+
+
 
 function mousePressed() {
   if (
@@ -302,4 +375,7 @@ function resetGame() {
   enemies = [];
   player.health = 100;
   spawnEnemies(5);
+  frameTimer = 180;
+  frameRate(60);
+  frameCount = 0;
 }

@@ -7,7 +7,10 @@ class Player extends Character{
   update() {
     this.moveCharacter();
     this.checkWalls();
-
+    this.checkProjectiles();
+  }
+  
+  checkProjectiles(){
     // Update bullets and remove dead ones
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       this.bullets[i].update(i);

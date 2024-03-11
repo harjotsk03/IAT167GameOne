@@ -14,17 +14,24 @@ class BossEnemy extends Character {
     this.moveCharacter();
     this.checkWalls();
     this.shooterTimer--;
-
+    this.checkProjectiles();
+    
     if (this.shooterTimer <= 0) {
       this.fireEnemy();
       if(gameState === 1){
         this.shooterTimer = 30; // Reset shooter timer  
+      }else if(gameState === 6){
+        this.shooterTimer = 15;
       }else{
         this.shooterTimer = 60; // Reset shooter timer
       }
       
     }
 
+    
+  }
+  
+  checkProjectiles(){
     for (let i = this.projectileEnemy.length - 1; i >= 0; i--) {
       this.projectileEnemy[i].update(i);
       if (!this.projectileEnemy[i].isAlive) {
@@ -92,6 +99,7 @@ class BossEnemy extends Character {
     ellipse(5,-2,5,5);
     pop();
   }
+  
   
   
   checkWalls() {

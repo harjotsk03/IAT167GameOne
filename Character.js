@@ -5,6 +5,7 @@ class Character {
     this.health = health;
     this.charW = charW;
     this.charH = charH;
+    this.value = 1;
   }
 
   update() {
@@ -23,7 +24,7 @@ class Character {
   }
 
   hitCharacter(character) {
-    this.decreaseHealth(1);
+    this.decreaseHealth(this.value);
     if (this.health <= 0) {
       this.rotateAndKill(character);
     }
