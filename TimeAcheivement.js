@@ -1,4 +1,5 @@
 class TimeAchievement {
+  // this is a class to display and keep track of if the player stays alive for 10 seconds
   constructor(pos, movePos) {
     this.pos = pos;
     this.movePos = movePos;

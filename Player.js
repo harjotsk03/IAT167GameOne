@@ -2,6 +2,8 @@ class Player extends Character{
   constructor(pos, vel, health, charW, charH){
     super(pos, vel, health, charW, charH);
     this.bullets = [];
+    this.lastHitTime = 0;
+    this.hitCooldown = 500;
   }
   
   update() {
@@ -10,13 +12,12 @@ class Player extends Character{
     this.checkProjectiles();
   }
   
+  // check player bullets with enemies
   checkProjectiles(){
-    // Update bullets and remove dead ones
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       this.bullets[i].update(i);
     }
 
-    // Check for collisions with enemies
     for (let j = 0; j < this.bullets.length; j++) {
       for (let i = 0; i < enemies.length; i++) {
         this.bullets[j].hit(enemies[i], i);
@@ -31,8 +32,18 @@ class Player extends Character{
     this.pos.add(this.vel);
   }
   
-  fire(){
-    let newProjectile = new Projcetile(createVector(this.pos.x,this.pos.y), createVector(0,-10), false, true);
+  // method to fire bullets 
+  fire() {
+    
+    // make the direction and speed of the bullet go towards the mouse and use the mouse as aiming
+    let direction = createVector(mouseX - this.pos.x, mouseY - this.pos.y);
+    
+    direction.normalize();
+    
+    let bulletSpeed = 10; 
+    direction.mult(bulletSpeed);
+
+    let newProjectile = new Projcetile(createVector(this.pos.x, this.pos.y), direction, false, true);
     this.bullets.push(newProjectile);
   }
   
@@ -48,9 +59,11 @@ class Player extends Character{
     pop();
   }
   
-  decreaseHealth(n){
-    this.health -= n;
+  decreaseHealth(n) {
+    const currentTime = millis(); 
+    if (currentTime - this.lastHitTime >= this.hitCooldown) {
+      this.lastHitTime = currentTime;
+      this.health -= n;
+    }
   }
-  
-
 }

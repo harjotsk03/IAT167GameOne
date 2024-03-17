@@ -48,6 +48,7 @@ class Character {
   killed(i) {
     enemies.splice(i, 1);
     score += 1;
+    enemyKillSound.play();
   }
 
   handleCollision(other, isPlayer) {
@@ -59,23 +60,30 @@ class Character {
       other.vel.set(avgSpeed * cos(angle - PI), avgSpeed * sin(angle - PI));
 
       if (isPlayer) {
-        player.decreaseHealth(1);
+        player.decreaseHealth(this.value);
       }
     }
   }
-
+  
   checkWalls() {
     if (this.pos.x < this.charW / 2) {
-      this.pos.x = this.charW / 2;
+      this.pos.x = this.charW/2;
     }
     if (this.pos.x > width - this.charW / 2) {
-      this.pos.x = width - this.charW / 2;
+      this.pos.x = width - this.charW/2;
     }
     if (this.pos.y < this.charH / 2) {
-      this.pos.y = this.charH / 2;
+      this.pos.y = this.charH/2;
     }
     if (this.pos.y > height - this.charH / 2) {
-      this.pos.y = height - this.charH / 2;
+      this.pos.y = height - this.charH/2;
     }
+  }
+  
+  drawCharacter(){
+    push();
+    translate(this.pos);
+    ellipse(0,0,50,50);
+    pop();
   }
 }

@@ -1,10 +1,12 @@
 class Projcetile {
+  
+  // isBoss field is to identify if the bullet is the boss enemy or not
   constructor(pos, vel, isBoss, isAlive) {
     this.pos = pos;
     this.vel = vel;
     this.isBoss = isBoss;
-    this.bulletW = 12;
-    this.bulletH = 12;
+    this.bulletW = width/60;
+    this.bulletH = width/60;
     this.isAlive = isAlive;
   }
   
@@ -19,6 +21,7 @@ class Projcetile {
     this.pos.add(this.vel);
   }
   
+  // remove bullet if it leaves the screen
   checkWalls(index) {
     if (this.pos.x > width + this.bulletW ||
         this.pos.x < 0 - this.bulletW ||
@@ -32,11 +35,19 @@ class Projcetile {
   drawProjectile() {
     push();
     translate(this.pos.x, this.pos.y);
+    // if its a boss then fill blue if not then gold
     if (this.isBoss) {
       fill('blue');
     } else {
       fill('gold');
+    // this if statement handles the players weapon upgrade to make the bullet appear different
+    if (gunUpgradeTimer > 0){
+        stroke('red')
+    }else{
+        stroke('gold')
     }
+    }
+    
     ellipse(0, 0, this.bulletW, this.bulletH);
     pop();
   }

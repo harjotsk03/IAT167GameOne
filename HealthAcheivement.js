@@ -1,6 +1,5 @@
-class ScoreAchievement {
-  
-  // this is a class to display and keep track of if the player gets 12 points
+class HealthAcheivement{
+  // this is a class to display and keep track of if the player stays alive for 10 seconds
   constructor(pos, movePos) {
     this.pos = pos;
     this.movePos = movePos;
@@ -22,13 +21,13 @@ class ScoreAchievement {
         fill('gold');
         stroke('rgb(159,136,14)');
         strokeWeight(3);
-        rect(-150, 30, 300,50, 50);
+        rect(-200, -25, 400,50, 50);
         textAlign(CENTER);
         fill(0);
         noStroke();
         textSize(16);
-        text('Get a score of 12', 15, 62);
-        image(trophyIcon2, -135, 40, 30, 30); // Draw the trophy icon
+        text('50 plus health in Wave 3', 15, 7);
+        image(trophyIcon2, -160, -15, 30, 30); // Draw the trophy icon
         pop();
       }else{
         push();
@@ -36,9 +35,10 @@ class ScoreAchievement {
         textSize(12)
         fill('gold');
         text('Acheivments', 40,-30);
-        image(scoreIcon, 15, -27, 50, 50);
+        image(healthAcheivIcon,63, -20, 40, 40);
         pop();
         noStroke();
+        
       }
     }
 }
